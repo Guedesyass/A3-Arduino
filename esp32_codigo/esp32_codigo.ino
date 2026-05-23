@@ -385,7 +385,7 @@ void loop(){
 
   }
 
-  else if(conteudo == "914D0EA4"){
+  else if(conteudo == "914B0EA4"){
 
     processarPagamento(
       "RLA9E75",
