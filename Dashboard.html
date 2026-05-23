@@ -204,6 +204,11 @@
       font-weight:bold;
     }
 
+    .pending{
+      color:#FFD000;
+      font-weight:bold;
+    }
+
     .denied{
       color:#ff4d4d;
       font-weight:bold;
@@ -227,7 +232,7 @@
 
     <div class="title">
 
-      <h1>Pedágio inteligente</h1>
+      <h1>Pedágio Inteligente</h1>
 
       <p>
         Monitoramento Inteligente em Tempo Real
@@ -279,12 +284,12 @@
     <div class="card">
 
       <div class="card-title">
-        Pagamentos negados
+        Pagamentos pendentes
       </div>
 
       <div
         class="card-value"
-        id="deniedCars"
+        id="pendingCars"
       >
         0
       </div>
@@ -332,7 +337,7 @@
       </div>
 
       <h2 id="flowText">
-        Fluxo Moderado
+        Fluxo Baixo
       </h2>
 
       <div class="flow-bar">
@@ -397,7 +402,7 @@
     updateClock();
 
     // ==========================
-    // BUSCAR DADOS DO ESP32
+    // BUSCAR DADOS
     // ==========================
 
     async function fetchData(){
@@ -418,7 +423,9 @@
 
         updateDashboard(data);
 
-      }catch(error){
+      }
+
+      catch(error){
 
         console.log(
           "Erro:",
@@ -430,10 +437,14 @@
     }
 
     // ==========================
-    // ATUALIZAR DASHBOARD
+    // DASHBOARD
     // ==========================
 
     function updateDashboard(data){
+
+      // ==========================
+      // CARDS
+      // ==========================
 
       document.getElementById(
         "totalValue"
@@ -446,14 +457,18 @@
       data.approvedCars;
 
       document.getElementById(
-        "deniedCars"
+        "pendingCars"
       ).innerHTML =
-      data.deniedCars;
+      data.pendingCars;
 
       document.getElementById(
         "avgTime"
       ).innerHTML =
       `${data.avgTime.toFixed(1)}s`;
+
+      // ==========================
+      // CANCELA
+      // ==========================
 
       const gate =
       document.getElementById(
@@ -468,7 +483,9 @@
         gate.className =
         "gate-status open";
 
-      }else{
+      }
+
+      else{
 
         gate.innerHTML =
         "● FECHADA";
@@ -482,39 +499,61 @@
       // FLUXO
       // ==========================
 
+      const flowText =
+      document.getElementById(
+        "flowText"
+      );
+
+      const flowFill =
       document.getElementById(
         "flowFill"
-      ).style.width =
-      `${data.flow}%`;
+      );
 
-      if(data.flow < 2){
+      // SEM FLUXO
 
-        document.getElementById(
-          "flowText"
-        ).innerHTML =
+      if(data.flow == 0){
+
+        flowText.innerHTML =
         "Fluxo Baixo";
 
-         flowFill.style.width = "30%";
+        flowFill.style.width =
+        "0%";
 
       }
 
-      else if(data.flow < 4){
+      // BAIXO
 
-        document.getElementById(
-          "flowText"
-        ).innerHTML =
+      else if(data.flow <= 2){
+
+        flowText.innerHTML =
+        "Fluxo Baixo";
+
+        flowFill.style.width =
+        "30%";
+
+      }
+
+      // MÉDIO
+
+      else if(data.flow <= 4){
+
+        flowText.innerHTML =
         "Fluxo Moderado";
 
-         flowFill.style.width =  "55%";
+        flowFill.style.width =
+        "55%";
+
       }
+
+      // ALTO
 
       else{
 
-        document.getElementById(
-          "flowText"
-        ).innerHTML =
+        flowText.innerHTML =
         "Fluxo Alto";
-         flowFill.style.width =  "85%";
+
+        flowFill.style.width =
+        "80%";
 
       }
 
@@ -530,7 +569,7 @@
     }
 
     // ==========================
-    // ATUALIZAÇÃO AUTOMÁTICA
+    // AUTO UPDATE
     // ==========================
 
     fetchData();
